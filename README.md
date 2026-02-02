@@ -1,5 +1,7 @@
 # AI Tools Photo Optimizer
 
+![Project Logo](docs/images/logo.png)
+
 A modern, monorepo-based adaptive image optimization tool built with TypeScript. This toolchain allows you to scan, classify, and optimize images for the web, generating a manifest for runtime usage.
 
 ## 📚 Documentation
