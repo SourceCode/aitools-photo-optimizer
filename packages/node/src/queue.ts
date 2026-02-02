@@ -3,11 +3,11 @@ import { Queue, QueueJob } from '@aitools-photo-optimizer/core';
 interface QueuedItem<T> {
     job: QueueJob<T>;
     resolve: () => void;
-    reject: (err: any) => void;
+    reject: (err: unknown) => void;
 }
 
 export class LocalQueue implements Queue {
-    private queue: QueuedItem<any>[] = [];
+    private queue: QueuedItem<unknown>[] = [];
     private running = 0;
     private active = false;
 

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import { FileSystemAdapter } from '../src/storage/fs-adapter';
 import fs from 'fs-extra';
 import path from 'path';
@@ -14,7 +14,7 @@ describe('FileSystemAdapter', () => {
     });
 
     it('should read file from base path', async () => {
-        (fs.readFile as any).mockResolvedValue(Buffer.from('content'));
+        (fs.readFile as unknown as Mock).mockResolvedValue(Buffer.from('content'));
         const result = await adapter.read('test.txt');
         expect(fs.readFile).toHaveBeenCalledWith(path.resolve('/base', 'test.txt'));
         expect(result.toString()).toBe('content');
@@ -28,7 +28,7 @@ describe('FileSystemAdapter', () => {
     });
 
     it('should check existence', async () => {
-        (fs.pathExists as any).mockResolvedValue(true);
+        (fs.pathExists as unknown as Mock).mockResolvedValue(true);
         const exists = await adapter.exists('test.txt');
         expect(exists).toBe(true);
         expect(fs.pathExists).toHaveBeenCalledWith(path.resolve('/base', 'test.txt'));

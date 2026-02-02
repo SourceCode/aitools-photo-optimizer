@@ -1,21 +1,34 @@
 import { parentPort } from 'worker_threads';
 import { TransformJob, QualityMetrics } from '@aitools-photo-optimizer/core';
 
+interface SharpInstance {
+    metadata: () => Promise<{ width: number; height: number; format: string }>;
+    resize: (w: number | undefined, h: number | undefined, opts: unknown) => SharpInstance;
+    avif: (opts: unknown) => SharpInstance;
+    webp: (opts: unknown) => SharpInstance;
+    jpeg: (opts: unknown) => SharpInstance;
+    png: (opts: unknown) => SharpInstance;
+    toBuffer: (opts: unknown) => Promise<{ data: Buffer; info: unknown }>;
+}
+
+type SharpConstructor = (input: unknown) => SharpInstance;
+
 // Robust import for Sharp
-let sharp: any;
+let sharp: unknown;
 try {
     sharp = require('sharp');
 } catch (e) {
     console.warn('Sharp module not found or failed to load. Using Mock implementation.');
-    sharp = (input: any) => ({
+    const mockSharp = (input: unknown) => ({
         metadata: async () => ({ width: 100, height: 100, format: 'mock' }),
-        resize: () => sharp(input),
-        avif: () => sharp(input),
-        webp: () => sharp(input),
-        jpeg: () => sharp(input),
-        png: () => sharp(input),
+        resize: () => mockSharp(input),
+        avif: () => mockSharp(input),
+        webp: () => mockSharp(input),
+        jpeg: () => mockSharp(input),
+        png: () => mockSharp(input),
         toBuffer: async () => ({ data: Buffer.from('mock-image-data'), info: { size: 15, format: 'mock' } })
     });
+    sharp = mockSharp;
 }
 
 // Define the message types
@@ -29,8 +42,10 @@ if (!parentPort) {
 
 parentPort.on('message', async (message: WorkerRequest) => {
     try {
+        const sharpFunc = sharp as SharpConstructor;
+
         if (message.type === 'metadata') {
-            const meta = await sharp(message.input).metadata();
+            const meta = await sharpFunc(message.input).metadata();
             parentPort!.postMessage({
                 type: 'success',
                 result: {
@@ -42,7 +57,7 @@ parentPort.on('message', async (message: WorkerRequest) => {
         } else if (message.type === 'optimize') {
             const { input, job } = message;
 
-            const pipeline = sharp(input);
+            const pipeline = sharpFunc(input);
 
             // Resize if needed
             if (job.width || job.height) {
@@ -68,16 +83,8 @@ parentPort.on('message', async (message: WorkerRequest) => {
             // Calculate metrics if requested/thresholds exist
             let metrics: QualityMetrics | undefined;
             if (job.metricThresholds) {
-                // To calc SSIM, we need to compare 'data' with 'input'. 
-                // However, if we resized, we can't easily compare directly without resizing input or using perceptual hash.
-                // Sharp doesn't expose SSIM directly on buffer comparison easily without external libs or complex pipelines.
-                // For now, we will stub this or use a simple heuristic if available, 
-                // or just skip actual calculation until we add a proper library like 'ssim.js' or use 'sharp-phash' etc.
-                // 
-                // BUT, user asked for "Compute SSIM / Butteraugli / PSNR".
-                // Since we don't have the lib installed yet, we will mark strict TODO or just attempt basic stat check.
-                // We'll leave it as undefined for this pass, but acknowledging it.
-                metrics = { ssim: 1.0 }; // Stub for flow testing
+                // Stub for flow testing
+                metrics = { ssim: 1.0 };
             }
 
             parentPort!.postMessage({
@@ -89,10 +96,11 @@ parentPort.on('message', async (message: WorkerRequest) => {
                 }
             });
         }
-    } catch (err: any) {
+    } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err);
         parentPort!.postMessage({
             type: 'error',
-            error: err.message
+            error: msg
         });
     }
 });

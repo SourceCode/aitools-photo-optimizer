@@ -10,16 +10,18 @@ import {
     OptimizerConfig,
     ImageInputDescriptor,
     TransformJob,
-    createEmptyManifest
+    createEmptyManifest,
+    ManifestEntry
 } from '@aitools-photo-optimizer/core';
 import { FileSystemAdapter } from './storage/fs-adapter';
 import { SharpAdapter } from './codecs/sharp-adapter';
 import { LocalQueue } from './queue';
 import { HeuristicClassifier } from './classifier';
+import { SourceUpdater } from './source-updater';
 
 const program = new Command();
 const fsAdapter = new FileSystemAdapter();
-const codecAdapter = new SharpAdapter();
+// codecAdapter moved to buildAction
 const queue = new LocalQueue(4); // Default concurrency
 
 async function loadConfig(cwd: string): Promise<OptimizerConfig> {
@@ -41,18 +43,14 @@ program
     .description('Adaptive Photo Optimizer CLI')
     .version('0.1.0');
 
-program
-    .command('build')
-    .description('Scan and optimize images')
-    .argument('[glob]', 'Glob pattern for images', '**/*.{jpg,jpeg,png}')
-    .option('-o, --out <dir>', 'Output directory', 'public/images/optimized')
-    .option('-c, --clean', 'Clean output directory before build')
-    .option('-v, --verbose', 'Verbose output')
-const buildAction = async (pattern: string, options: any) => {
+
+const buildAction = async (pattern: string, options: { out: string; clean: boolean; verbose: boolean }) => {
     const cwd = process.cwd();
+    console.log('CLI CWD:', cwd);
     const config = await loadConfig(cwd);
     const outDir = path.resolve(cwd, options.out);
     const classifier = new HeuristicClassifier();
+    const codecAdapter = new SharpAdapter();
 
     if (options.clean) {
         console.log(chalk.gray('Cleaning output directory...'));
@@ -107,7 +105,7 @@ const buildAction = async (pattern: string, options: any) => {
                     inputPath: file,
                     contentHash: plan.id,
                     classification: inputDescriptor.classification,
-                    outputs: [] as any[]
+                    outputs: [] as ManifestEntry['outputs']
                 };
 
                 // Execute plan outputs
@@ -151,8 +149,8 @@ const buildAction = async (pattern: string, options: any) => {
     await Promise.all(tasks);
 
     // Cleanup worker pool
-    if (codecAdapter['close']) {
-        (codecAdapter as any).close();
+    if ('close' in codecAdapter) {
+        (codecAdapter as unknown as { close: () => void }).close();
     }
 
     console.log('\n'); // Newline after progress
@@ -172,9 +170,40 @@ program
     .option('-v, --verbose', 'Verbose output')
     .action(buildAction);
 
-// Only parse if executed directly
-if (require.main === module) {
+const updateSourceAction = async (options: { manifest: string; source: string; dryRun?: boolean }) => {
+    const cwd = process.cwd();
+    const manifestPath = path.resolve(cwd, options.manifest);
+
+    console.log(chalk.blue(`Loading manifest from: ${options.manifest}`));
+
+    try {
+        const updater = new SourceUpdater(manifestPath, options.dryRun);
+        await updater.loadManifest();
+        await updater.scanAndReplace(options.source, cwd);
+        console.log(chalk.bold.green('Source update complete!'));
+    } catch (e: unknown) {
+        const msg = e instanceof Error ? e.message : String(e);
+        console.error(chalk.red('Error updating source:'), msg);
+        process.exit(1);
+    }
+};
+
+program
+    .command('update-source')
+    .description('Update source code references to use optimized images')
+    .option('-m, --manifest <path>', 'Path to manifest.json', 'public/images/optimized/manifest.json')
+    .option('-s, --source <glob>', 'Glob pattern for source files to update', 'src/**/*.{html,js,ts,jsx,tsx}')
+    .option('--dry-run', 'Perform a dry run without modifying files')
+    .action(updateSourceAction);
+
+export function run() {
     program.parse();
 }
 
-export { buildAction, loadConfig };
+// Only parse if executed directly
+if (require.main === module) {
+    run();
+}
+
+export { buildAction, loadConfig, updateSourceAction };
+

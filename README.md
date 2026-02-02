@@ -40,6 +40,9 @@ Generate optimized assets from your source images:
 ```bash
 # Build optimized variants
 ./packages/node/bin/apo.js build 'public/images/*.{jpg,png}' --out public/optimized
+
+# Update source files
+./packages/node/bin/apo.js update-source --source 'src/**/*.html' --manifest public/optimized/manifest.json
 ```
 
 See [First Run](docs/first-run.md) for a complete guide.

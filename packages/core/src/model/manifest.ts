@@ -1,12 +1,16 @@
+import { QualityMetrics, ImageClassification } from './descriptors';
+
 export interface ManifestEntry {
     inputPath: string;
     contentHash: string;
+    classification?: ImageClassification; // Optional or required depending on version
     outputs: {
         format: string;
         width: number;
         height: number;
         path: string;
         size: number;
+        metrics?: QualityMetrics;
     }[];
 }
 

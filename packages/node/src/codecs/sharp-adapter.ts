@@ -9,13 +9,13 @@ export class SharpAdapter implements CodecAdapter {
         this.pool.start();
     }
 
-    async optimize(input: Buffer, job: TransformJob): Promise<{ buffer: Buffer; info: any; metrics?: QualityMetrics }> {
+    async optimize(input: Buffer, job: TransformJob): Promise<{ buffer: Buffer; info: unknown; metrics?: QualityMetrics }> {
         // Offload to worker
         return this.pool.run({
             type: 'optimize',
             input,
             job
-        });
+        }) as Promise<{ buffer: Buffer; info: unknown; metrics?: QualityMetrics }>;
     }
 
     async metadata(input: Buffer): Promise<{ width: number; height: number; format: string }> {
@@ -23,7 +23,7 @@ export class SharpAdapter implements CodecAdapter {
         const result = await this.pool.run({
             type: 'metadata',
             input
-        });
+        }) as { width: number; height: number; format: string };
 
         return {
             width: result.width || 0,

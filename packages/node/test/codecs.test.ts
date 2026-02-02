@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { SharpAdapter } from '../src/codecs/sharp-adapter';
+import { TransformJob } from '@aitools-photo-optimizer/core';
 
 const { mockRun, mockStart, mockClose } = vi.hoisted(() => ({
     mockRun: vi.fn(),
@@ -33,7 +34,7 @@ describe('SharpAdapter', () => {
 
     it('should offload optimize to worker', async () => {
         const input = Buffer.from('input');
-        const job: any = { format: 'webp' };
+        const job = { format: 'webp' } as unknown as TransformJob;
         mockRun.mockResolvedValue({ buffer: Buffer.from('optimized') });
 
         const result = await adapter.optimize(input, job);

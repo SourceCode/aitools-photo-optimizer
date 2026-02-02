@@ -1,30 +1,30 @@
 /**
  * @vitest-environment happy-dom
  */
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import { AutoOptimizer } from '../src/observer';
 
 describe('AutoOptimizer', () => {
-    let resolver: any;
-    let mockObserve: any;
-    let mutationCallback: (mutations: any[]) => void;
+    let resolver: Mock;
+    let mockObserve: Mock;
+    let mutationCallback: MutationCallback;
 
     beforeEach(() => {
         document.body.innerHTML = '';
-        resolver = vi.fn((src, width, format) => `optimized/${src}`);
+        resolver = vi.fn((src) => `optimized/${src}`);
 
         // Mock MutationObserver
         mockObserve = vi.fn();
         mutationCallback = () => { };
 
         global.MutationObserver = class {
-            constructor(cb: any) {
+            constructor(cb: MutationCallback) {
                 mutationCallback = cb;
             }
             observe = mockObserve;
             disconnect = vi.fn();
             takeRecords = vi.fn();
-        } as any;
+        } as unknown as typeof MutationObserver;
     });
 
     it('should optimize existing images on scan', () => {
@@ -56,7 +56,7 @@ describe('AutoOptimizer', () => {
         };
 
         // Trigger callback
-        mutationCallback([mutationRecord]);
+        mutationCallback([mutationRecord as unknown as MutationRecord], {} as MutationObserver);
 
         expect(resolver).toHaveBeenCalledWith('dynamic.jpg', undefined, 'webp');
         expect(img.src).toContain('optimized/dynamic.jpg');
@@ -75,7 +75,7 @@ describe('AutoOptimizer', () => {
             target: img
         };
 
-        mutationCallback([mutationRecord]);
+        mutationCallback([mutationRecord as unknown as MutationRecord], {} as MutationObserver);
 
         expect(resolver).toHaveBeenCalledWith('later.jpg', undefined, 'webp');
         expect(img.src).toContain('optimized/later.jpg');

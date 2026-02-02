@@ -37,7 +37,7 @@ describe('Planner', () => {
         // The planner merges webp options into the top level for the job specific config if I recall check logic:
         // specificConfig = { ...specificConfig, ...baseConfig.webp };
         // But specificConfig is typed as OptimizerConfig which doesn't have nearLossless on top level.
-        expect((webpJob?.options as any).nearLossless).toBe(true);
+        expect(((webpJob?.options as unknown) as { nearLossless: boolean }).nearLossless).toBe(true);
     });
 
     it('should respect container dimensions', () => {

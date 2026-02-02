@@ -38,12 +38,21 @@ apo build [glob-pattern] [options]
 
 **Example Usage:**
 ```bash
-# Basic usage
-./packages/node/bin/apo.js build
+# Build optimized variants
+./packages/node/bin/apo.js build 'public/images/*.{jpg,png}' --out public/optimized
 
-# Custom pattern and output
-./packages/node/bin/apo.js build "src/assets/*.png" --out dist/img --clean --verbose
+# Update source files
+./packages/node/bin/apo.js update-source --source 'src/**/*.html' --manifest public/optimized/manifest.json
 ```
+
+**Update Source Command:**
+```bash
+apo update-source [options]
+```
+**Options:**
+- `-m, --manifest <path>`: Path to generic manifest. Default `public/images/optimized/manifest.json`.
+- `-s, --source <glob>`: Source files to update. Default `src/**/*.{html,js,ts,jsx,tsx}`.
+- `--dry-run`: Simulate changes.
 
 ### 2.2. Configuration (`apo.config.json`)
 

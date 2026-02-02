@@ -3,9 +3,9 @@ import path from 'path';
 import os from 'os';
 
 interface WorkerTask {
-    message: any;
-    resolve: (value: any) => void;
-    reject: (reason?: any) => void;
+    message: unknown;
+    resolve: (value: unknown) => void;
+    reject: (reason?: unknown) => void;
 }
 
 export class WorkerPool {
@@ -48,7 +48,7 @@ export class WorkerPool {
         this.freeWorkers.push(worker);
     }
 
-    async run(message: any): Promise<any> {
+    async run(message: unknown): Promise<unknown> {
         // Create a promise
         return new Promise((resolve, reject) => {
             const task: WorkerTask = { message, resolve, reject };
@@ -67,14 +67,16 @@ export class WorkerPool {
 
     private execute(worker: Worker, task: WorkerTask) {
         // We need one-time listener for this specific task
-        const onMessage = (response: any) => {
+        const onMessage = (response: unknown) => {
             worker.off('message', onMessage);
             worker.off('error', onError);
 
-            if (response.type === 'success') {
-                task.resolve(response.result);
+            const res = response as { type: string; result?: unknown; error?: string };
+
+            if (res.type === 'success') {
+                task.resolve(res.result);
             } else {
-                task.reject(new Error(response.error));
+                task.reject(new Error(res.error));
             }
 
             this.freeWorkers.push(worker);

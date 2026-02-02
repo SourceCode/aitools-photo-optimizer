@@ -24,8 +24,8 @@ const fetchManifest = async () => {
         const entry = Object.entries(manifest?.entries || {}).find(([k]) => k.endsWith(key));
 
         if (entry) {
-            const [_, data] = entry as any;
-            const output = data.outputs.find((o: any) => o.format === format);
+            const [, data] = entry as [string, { outputs: { format: string; path: string }[] }];
+            const output = data.outputs.find((o) => o.format === format);
             if (output) {
                 return `/${output.path}`; // Return relative path from root
             }

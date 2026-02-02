@@ -1,11 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { buildAction, loadConfig } from '../src/cli';
+import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
+import { buildAction, loadConfig, updateSourceAction } from '../src/cli';
 import fg from 'fast-glob';
 import fs from 'fs-extra';
-import { LocalQueue } from '../src/queue';
-import { FileSystemAdapter } from '../src/storage/fs-adapter';
-import { SharpAdapter } from '../src/codecs/sharp-adapter';
 import { HeuristicClassifier } from '../src/classifier';
+import { createTransformPlan } from '@aitools-photo-optimizer/core';
+import { SourceUpdater } from '../src/source-updater';
 
 // Mocks
 const {
@@ -15,7 +14,9 @@ const {
     mockCodecMetadata,
     mockCodecOptimize,
     mockClassify,
-    mockRefine
+    mockRefine,
+    mockLoadManifest,
+    mockScanAndReplace
 } = vi.hoisted(() => ({
     mockQueueAdd: vi.fn(),
     mockQueueStart: vi.fn(),
@@ -23,7 +24,9 @@ const {
     mockCodecMetadata: vi.fn(),
     mockCodecOptimize: vi.fn(),
     mockClassify: vi.fn(),
-    mockRefine: vi.fn()
+    mockRefine: vi.fn(),
+    mockLoadManifest: vi.fn(),
+    mockScanAndReplace: vi.fn()
 }));
 
 vi.mock('fast-glob');
@@ -63,20 +66,27 @@ vi.mock('@aitools-photo-optimizer/core', async () => {
         createEmptyManifest: () => ({ entries: {} })
     };
 });
-import { createTransformPlan } from '@aitools-photo-optimizer/core';
+vi.mock('../src/source-updater', () => ({
+    SourceUpdater: vi.fn(function () {
+        return {
+            loadManifest: mockLoadManifest,
+            scanAndReplace: mockScanAndReplace
+        };
+    })
+}));
 
 describe('CLI', () => {
     describe('loadConfig', () => {
         it('should load config if exists', async () => {
-            (fs.pathExists as any).mockResolvedValue(true);
-            (fs.readJSON as any).mockResolvedValue({ quality: 50 });
+            (fs.pathExists as unknown as Mock).mockResolvedValue(true);
+            (fs.readJSON as unknown as Mock).mockResolvedValue({ quality: 50 });
 
             const config = await loadConfig('/tmp');
             expect(config.quality).toBe(50);
         });
 
         it('should return default config if not exists', async () => {
-            (fs.pathExists as any).mockResolvedValue(false);
+            (fs.pathExists as unknown as Mock).mockResolvedValue(false);
             const config = await loadConfig('/tmp');
             expect(config.quality).toBe(80); // Default
         });
@@ -85,18 +95,18 @@ describe('CLI', () => {
     describe('buildAction', () => {
         beforeEach(() => {
             vi.clearAllMocks();
-            (fg as any).mockResolvedValue(['img.jpg']);
+            (fg as unknown as Mock).mockResolvedValue(['img.jpg']);
             // LocalQueue mock is handled in factory to catch module-level instantiation
 
             // Adapters are mocked in factory to handle top-level instantiation
-            (HeuristicClassifier as any).mockImplementation(function () {
+            (HeuristicClassifier as unknown as Mock).mockImplementation(function () {
                 return {
                     classify: mockClassify,
                     refineClassification: mockRefine
                 };
             });
-            (fs.stat as any).mockResolvedValue({ mtime: new Date() });
-            (createTransformPlan as any).mockReturnValue({
+            (fs.stat as unknown as Mock).mockResolvedValue({ mtime: new Date() });
+            (createTransformPlan as unknown as Mock).mockReturnValue({
                 id: 'hash',
                 outputs: [{
                     format: 'webp',
@@ -117,7 +127,7 @@ describe('CLI', () => {
                 metrics: { ssim: 0.99 }
             });
 
-            await buildAction('**/*.jpg', { out: 'dist', verbose: true });
+            await buildAction('**/*.jpg', { out: 'dist', clean: false, verbose: true });
 
             expect(fg).toHaveBeenCalled();
             expect(mockQueueStart).toHaveBeenCalled();
@@ -133,9 +143,33 @@ describe('CLI', () => {
         });
 
         it('should clean output directory if requested', async () => {
-            (fg as any).mockResolvedValue([]);
-            await buildAction('**/*.jpg', { out: 'dist', clean: true });
+            (fg as unknown as Mock).mockResolvedValue([]);
+            await buildAction('**/*.jpg', { out: 'dist', clean: true, verbose: false });
             expect(fs.emptyDir).toHaveBeenCalledWith(expect.stringContaining('dist'));
+        });
+    });
+
+    describe('updateSourceAction', () => {
+        beforeEach(() => {
+            vi.clearAllMocks();
+        });
+
+        it('should update source files', async () => {
+            await updateSourceAction({ manifest: 'manifest.json', source: '**/*.html', dryRun: false });
+
+            expect(SourceUpdater).toHaveBeenCalledWith(expect.stringContaining('manifest.json'), false);
+            expect(mockLoadManifest).toHaveBeenCalled();
+            expect(mockScanAndReplace).toHaveBeenCalledWith('**/*.html', expect.any(String));
+        });
+
+        it('should handle errors', async () => {
+            const exitSpy = vi.spyOn(process, 'exit').mockImplementation((() => { }) as any);
+            mockLoadManifest.mockRejectedValue(new Error('Failed'));
+
+            await updateSourceAction({ manifest: 'manifest.json', source: '**/*.html' });
+
+            expect(exitSpy).toHaveBeenCalledWith(1);
+            exitSpy.mockRestore();
         });
     });
 });
