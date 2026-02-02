@@ -1,0 +1,18 @@
+{
+    "name": "demo-app",
+    "version": "0.0.0",
+    "private": true,
+    "scripts": {
+        "dev": "vite",
+        "build": "tsc && vite build",
+        "optimize": "apo build 'public/images/*.{jpg,png}' --out public/optimized --verbose"
+    },
+    "dependencies": {
+        "@aitools-photo-optimizer/node": "workspace:*",
+        "@aitools-photo-optimizer/web": "workspace:*"
+    },
+    "devDependencies": {
+        "typescript": "^5.9.3",
+        "vite": "^5.4.21"
+    }
+}

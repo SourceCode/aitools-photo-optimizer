@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "generatedAt": "2026-02-02T13:53:23.680Z",
+  "entries": {
+    "public/images/sample.jpg": {
+      "inputPath": "public/images/sample.jpg",
+      "contentHash": "dcf6dcc5229d09b6",
+      "classification": "photo",
+      "outputs": [
+        {
+          "format": "webp",
+          "width": 800,
+          "height": 600,
+          "path": "public/optimized/dcf6dcc5229d09b6_800x600_4e6e29b8.webp",
+          "size": 2746,
+          "metrics": {
+            "ssim": 1
+          }
+        },
+        {
+          "format": "avif",
+          "width": 800,
+          "height": 600,
+          "path": "public/optimized/dcf6dcc5229d09b6_800x600_4e6e29b8.avif",
+          "size": 641,
+          "metrics": {
+            "ssim": 1
+          }
+        }
+      ]
+    }
+  }
+}

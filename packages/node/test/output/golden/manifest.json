@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "generatedAt": "2026-02-02T13:52:59.126Z",
+  "entries": {
+    "/Users/ryanrentfro/code/aitool-photo-optimizer/packages/node/test/fixtures/golden/photo.jpg": {
+      "inputPath": "/Users/ryanrentfro/code/aitool-photo-optimizer/packages/node/test/fixtures/golden/photo.jpg",
+      "contentHash": "dcf6dcc5229d09b6",
+      "classification": "photo",
+      "outputs": [
+        {
+          "format": "webp",
+          "width": 800,
+          "height": 600,
+          "path": "test/output/golden/dcf6dcc5229d09b6_800x600_4e6e29b8.webp",
+          "size": 2746,
+          "metrics": {
+            "ssim": 1
+          }
+        },
+        {
+          "format": "avif",
+          "width": 800,
+          "height": 600,
+          "path": "test/output/golden/dcf6dcc5229d09b6_800x600_4e6e29b8.avif",
+          "size": 641,
+          "metrics": {
+            "ssim": 1
+          }
+        }
+      ]
+    },
+    "/Users/ryanrentfro/code/aitool-photo-optimizer/packages/node/test/fixtures/golden/icon.png": {
+      "inputPath": "/Users/ryanrentfro/code/aitool-photo-optimizer/packages/node/test/fixtures/golden/icon.png",
+      "contentHash": "d5b0311686b298a6",
+      "classification": "icon",
+      "outputs": [
+        {
+          "format": "webp",
+          "width": 64,
+          "height": 64,
+          "path": "test/output/golden/d5b0311686b298a6_64x64_f35fbde4.webp",
+          "size": 782
+        },
+        {
+          "format": "avif",
+          "width": 64,
+          "height": 64,
+          "path": "test/output/golden/d5b0311686b298a6_64x64_818e815c.avif",
+          "size": 1266
+        }
+      ]
+    },
+    "/Users/ryanrentfro/code/aitool-photo-optimizer/packages/node/test/fixtures/golden/screenshot.png": {
+      "inputPath": "/Users/ryanrentfro/code/aitool-photo-optimizer/packages/node/test/fixtures/golden/screenshot.png",
+      "contentHash": "8470eecdfacd88a8",
+      "classification": "screenshot",
+      "outputs": [
+        {
+          "format": "webp",
+          "width": 1024,
+          "height": 768,
+          "path": "test/output/golden/8470eecdfacd88a8_1024x768_f35fbde4.webp",
+          "size": 2948,
+          "metrics": {
+            "ssim": 1
+          }
+        },
+        {
+          "format": "avif",
+          "width": 1024,
+          "height": 768,
+          "path": "test/output/golden/8470eecdfacd88a8_1024x768_818e815c.avif",
+          "size": 4087,
+          "metrics": {
+            "ssim": 1
+          }
+        }
+      ]
+    }
+  }
+}

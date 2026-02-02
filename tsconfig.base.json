@@ -1,0 +1,35 @@
+{
+    "compilerOptions": {
+        "strict": true,
+        "noImplicitAny": true,
+        "strictNullChecks": true,
+        "strictFunctionTypes": true,
+        "strictBindCallApply": true,
+        "strictPropertyInitialization": true,
+        "noImplicitThis": true,
+        "alwaysStrict": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "forceConsistentCasingInFileNames": true,
+        "moduleResolution": "node",
+        "esModuleInterop": true,
+        "target": "ES2022",
+        "lib": [
+            "ES2022",
+            "DOM"
+        ],
+        "declaration": true,
+        "composite": true,
+        "skipLibCheck": true,
+        "paths": {
+            "@aitools-photo-optimizer/core": [
+                "./packages/core/src/index.ts"
+            ],
+            "@aitools-photo-optimizer/web": [
+                "./packages/web/src/index.ts"
+            ]
+        }
+    }
+}
