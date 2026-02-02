@@ -25,3 +25,11 @@ Use Conventional Commits:
 - `fix: ...` for bug fixes
 - `docs: ...` for documentation
 - `chore: ...` for maintenance
+
+## Security Training (SA-11)
+
+All contributors are expected to:
+1.  Read the **[Security Policy](./security.md)** and associated documents.
+2.  Follow the **[Secure Coding Guidelines](https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/)**.
+3.  Review the **Access Control Policy** before requesting elevated permissions.
+

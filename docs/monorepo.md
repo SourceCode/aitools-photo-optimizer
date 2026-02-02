@@ -1,34 +1,33 @@
-# Monorepo Structure
+# Monorepo Guide
 
-This project uses **PNPM Workspaces** to manage multiple packages.
+This repository uses **pnpm workspaces** and **Turbo** (implied via script dependencies) to manage multiple packages.
 
-## Workspace Layout
+## Structure
 
-```
+```text
 .
-├── packages/
-│   ├── core/       # Domain logic, interfaces, planning (Platform Agnostic)
-│   ├── node/       # Node.js adapter, CLI, Worker Pool, Sharp integration
-│   └── web/        # Browser runtime (Observer)
 ├── apps/
-│   └── demo/       # Integration example app
-├── docs/           # Documentation
-├── scripts/        # Maintenance scripts
-└── apo.config.json # Project configuration
+│   └── demo/             # Vite-based usage example
+├── packages/
+│   ├── core/             # Business logic, types, hashing
+│   ├── node/             # CLI, Workers, Sharp Adapter
+│   └── web/              # Browser runtime
+├── docs/                 # Documentation
+└── package.json          # Root configuration
 ```
 
 ## Dependency Graph
+- `apps/demo` -> depends on `web` and `node` (for build scripts).
+- `node` -> depends on `core`.
+- `web` -> depends on logic from `core`.
 
-- `node` depends on `core`.
-- `web` depends on `core` (types).
-- `apps/demo` depends on `web`.
-
-## Building
-
+## Workspace Commands
+Run commands across all packages:
 ```bash
-# Build all
-pnpm build
-
-# Build specific package
-pnpm --filter @aitools-photo-optimizer/core build
+pnpm -r run build
+pnpm -r run test
 ```
+
+## Versioning
+Packages are currently versioned in lock-step (`0.0.0`) for development.
+We follow SemVer when publishing.

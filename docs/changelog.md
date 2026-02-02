@@ -3,12 +3,9 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
-
 ### Added
-- Initial release of `aitools-photo-optimizer`.
-- Core scanning, planning, and execution pipeline.
-- Heuristic classification engine.
-- CLI with `build` and `update-source` commands.
-- Web runtime (Observer).
+- Initial monorepo structure.
+- Core classification logic.
+- Node.js Worker Pool implementation.
+- Web Runtime Reference Implementation.
 - Documentation suite.
-- Agent optimization features.

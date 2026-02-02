@@ -1,25 +1,24 @@
 # Documentation Hub
 
-Welcome to the `aitools-photo-optimizer` documentation.
+Welcome to the documentation for `aitools-photo-optimizer`.
 
-## User Guides
-- [Installation](install.md): Get up and running.
-- [Setup & Configuration](setup.md): detailed config reference.
-- [First Run](first-run.md): Your first optimization task.
-- [Functionality](functionality.md): What this tool can do.
-- [Troubleshooting](troubleshooting.md): Help when things go wrong.
+## Getting Started
+- **[Installation](install.md)**: System requirements and installation steps.
+- **[Setup](setup.md)**: Configuration and environment variables.
+- **[First Run](first-run.md)**: Your first 5 minutes with the tool.
 
-## Developer Reference
-- [Schema](schema.md): `apo.config.json` schema.
-- [API Reference](api.md): Core interfaces and CLI.
-- [Implementation](implementation.md): Architecture and internals.
-- [Integrations](integrations.md): External libraries.
-- [Monorepo Structure](monorepo.md): How packages are organized.
+## Core Concepts
+- **[Functionality](functionality.md)**: How the optimizer decides what to do.
+- **[Architecture](implementation.md)**: Monorepo structure and design patterns.
+- **[Monorepo](monorepo.md)**: Detailed workspace breakdown.
 
-## Quality & Process
-- [Testing](testing.md): How we test.
-- [Coverage](coverage.md): Coverage visualization.
-- [Security](security.md): Security stance.
-- [Contributing](contributing.md): Join the project.
-- [Changelog](changelog.md): History of changes.
-- [Agent Guide](agent-contribution.md): For AI collaborators.
+## Reference
+- **[API Reference](api.md)**: CLI commands and Library exports.
+- **[Integrations](integrations.md)**: Framework and tool integrations.
+- **[Security](security.md)**: Security policies and hardening guide.
+
+## Operations
+- **[Testing](testing.md)**: How to run and write tests.
+- **[Coverage](coverage.md)**: Current coverage metrics and goals.
+- **[Troubleshooting](troubleshooting.md)**: FAQ and error resolution.
+- **[Changelog](changelog.md)**: Version history.

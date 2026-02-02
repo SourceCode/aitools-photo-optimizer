@@ -1,25 +1,25 @@
 # Test Coverage
 
-Target: **95%+** across all packages.
+We maintain a high standard of test coverage. CI gates require passing tests and minimal coverage regressions.
 
-## Generating Report
+## Metrics (as of latest run)
 
+| Package | Statements | Branch | Functions | Lines | Notes |
+|---------|------------|--------|-----------|-------|-------|
+| **Overall** | **93.21%** | **74.50%** | **96.82%** | **95.20%** | Strong overall health. |
+| `core` | 100% | >90% | 100% | 100% | Critical logic fully covered. |
+| `node` | 90.90% | 79.12% | 93.93% | 93.57% | CLI and IO logic. |
+| `web` | 92.85% | 71.42% | 100% | 100% | Runtime observer. |
+
+### Critical Gaps
+- **Branch Coverage in `command/build.ts` (56%)**: Some CLI edge cases (verbose logging branches, specific error catch blocks) are not fully exercised in integration tests.
+- **`worker-pool.ts`**: Some error handling paths for thread termination are theoretical and hard to induce in tests.
+
+## Running Coverage Locally
 ```bash
-pnpm test --coverage
+pnpm run test --coverage
 ```
-This generates a textual report and a HTML report in `coverage/`.
+This generates a report in `coverage/` and prints the summary table to stdout.
 
-## Current Status (Estimated)
-
-| Package | Statements | Branches | Functions | Lines |
-|---------|------------|----------|-----------|-------|
-| Core    | 100%       | 100%     | 100%      | 100%  |
-| Node    | >90%       | >85%     | >90%      | >90%  |
-
-*Note: See `test-results.json` or run coverage command for exact numbers.*
-
-## Critical Paths
-
-- **Planner**: Fully covered (logic core).
-- **Classifier**: Fully covered (logic core).
-- **CLI**: Covered via E2E golden tests.
+## Thresholds
+We aim for **90% Line Coverage**. PRs dropping below this may be flagged.

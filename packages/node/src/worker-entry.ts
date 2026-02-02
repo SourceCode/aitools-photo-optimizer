@@ -16,8 +16,9 @@ type SharpConstructor = (input: unknown) => SharpInstance;
 // Robust import for Sharp
 let sharp: unknown;
 try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     sharp = require('sharp');
-} catch (e) {
+} catch (_e) {
     console.warn('Sharp module not found or failed to load. Using Mock implementation.');
     const mockSharp = (input: unknown) => ({
         metadata: async () => ({ width: 100, height: 100, format: 'mock' }),

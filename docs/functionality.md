@@ -1,32 +1,32 @@
 # Functionality Overview
 
-## Classification Engine
+The Optimizer operates in defined phases to transform raw assets into optimized web deliverables.
 
-The optimizer doesn't treat all images equally. It uses a **Heuristic Classifier** to determine the best strategy.
+## Core Workflows
 
-| Classification | Detection Logic | Optimization Strategy |
-|----------------|-----------------|-----------------------|
-| **Screenshot** | 'screen', 'capture' in name | Higher quality, favor PNG/WebP lossless |
-| **Icon** | < 64x64, square ratio | Lossless, crisp edges |
-| **Photo** | Default | Balanced compression (AVIF/WebP) |
+### 1. Classification (Heuristic Analysis)
+The engine analyzes input images to determine their type.
+- **Photo**: Complex gradients, many colors, camera data. -> Uses Lossy compression (AVIF/WebP) with subsampling.
+- **Icon/Graphic**: Sharp edges, flat colors. -> Uses Lossless or Near-Lossless compression.
+- **Screenshot**: Text-heavy, sharp lines. -> Optimized for readability.
 
-## Parallel Processing
+### 2. Planning
+The `Planner` creates a stateless list of jobs based on the input and target configuration.
+- **Hashing**: Source contents are hashed to ensure cache-busting and determinism.
+- **Formats**: Generates multiple formats (AVIF first, then WebP) for browser fallbacks.
 
-The tool uses a **Worker Pool** to process multiple images concurrently.
-- Limits concurrency based on CPU cores.
-- Prevents main thread blocking.
+### 3. Execution (Worker Pool)
+Jobs are executed in parallel using Node.js Worker Threads (`worker_threads`).
+- **Parallelism**: Defaults to `os.cpus().length`.
+- **Isolation**: Crashes in a single image worker do not bring down the main process.
 
-## Manifest Mode
+### 4. Source Updating
+The CLI can optionally scan your codebase (`.html`, `.js`, `.ts`) and rewrite references to point to the optimized assets (or let the Runtime handle it).
 
-The tool generates a **Manifest File** (`manifest.json`) instead of overwriting source files.
+### 5. Runtime (Web)
+The `@aitools-photo-optimizer/web` package provides:
+- **`AutoOptimizer`**: An observer that intercepts image requests and rewrites URLs based on the user's browser support (e.g., serving AVIF to Chrome users).
 
-**Benefits:**
-- **Non-destructive**: Source files remain untouched.
-- **Cache-busting**: Output filenames include content hashes.
-- **Runtime flexibility**: The client decides which format to load.
-
-## Content Hashing
-
-Builds are incremental.
-- Calculates hash of **Input Content** + **Config Options**.
-- If the output file exists with that hash, optimization is skipped.
+## Permissions
+- **Read**: Needs read access to Source Glob paths.
+- **Write**: Needs write access to Output Directory (creates it if missing).

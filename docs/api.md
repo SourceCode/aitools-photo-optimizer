@@ -2,66 +2,54 @@
 
 ## CLI Reference
 
-### `build`
+Usage: `apo [command] [options]`
 
-Scans and optimizes images.
+### `build`
+Optimizes images matching a glob pattern.
 
 ```bash
-apo build <glob-pattern> [options]
+apo build <glob> [options]
 ```
+**Arguments**:
+- `glob`: (Required) File glob pattern (e.g., `'src/images/**/*.png'`).
 
-**Options:**
-- `--out <dir>`: Output directory (default: `dist`).
+**Options**:
+- `-o, --out <dir>`: Output directory (default: `dist/images`).
 - `--clean`: Empty output directory before building.
-- `--verbose`: Print detailed logs.
-- `--json`: Output logs as JSON (for agents/machines).
-- `--help`: Show help.
+- `--verbose`: Enable detailed logging.
+- `--json`: Output result as JSON (useful for CI/scripts).
 
 ### `update-source`
-
-Updates source code to reference optimized assets.
+Rewrites source code to reference optimized assets.
 
 ```bash
-apo update-source <glob-pattern> [options]
+apo update-source <glob> [options]
 ```
+**Options**:
+- `--manifest <path>`: Path to `manifest.json`.
 
-**Options:**
-- `--manifest <path>`: Path to manifest (default: `manifest.json`).
-- `--dry-run`: Don't write changes.
-
-## Core Interfaces
-
-### `TransformJob`
-
-The atomic unit of work.
+## Library Reference (Node)
 
 ```typescript
-interface TransformJob {
-    kind: 'transform';
-    width?: number;
-    height?: number;
-    format: 'avif' | 'webp' | 'jpeg' | 'png';
-    options: OptimizerConfig;
-    outputName: string;
-}
+import { OptimizeProject } from '@aitools-photo-optimizer/node';
+
+const result = await OptimizeProject({
+  input: ['src/*.png'],
+  outDir: 'dist',
+  config: { ... }
+});
 ```
 
-### `TransformPlan`
+## Library Reference (Web)
 
 ```typescript
-interface TransformPlan {
-    id: string;
-    input: ImageInputDescriptor;
-    outputs: TransformJob[];
-}
-```
+import { AutoOptimizer } from '@aitools-photo-optimizer/web';
 
-### `ImageInputDescriptor`
+const optimizer = new AutoOptimizer((src) => {
+  // Return the new URL based on logical reasoning or manifest lookup
+  return resolveUrl(src);
+});
 
-```typescript
-interface ImageInputDescriptor {
-    path: string;
-    stats: { size: number; mtime: Date };
-    classification?: 'photo' | 'screenshot' | 'icon' | 'vector';
-}
+// Start observing the DOM
+optimizer.start();
 ```

@@ -1,54 +1,42 @@
-# Installation Guide
+# Installation
 
 ## Prerequisites
 
-- **Node.js**: Version **24.13.0** or higher.
-    - *Why?* We use modern Node features and strict engine versioning.
-- **Package Manager**: **PNPM** (version 8 or 9).
-    - *Why?* Efficient monorepo workspace support.
-- **OS**: MacOS, Linux, or WSL2 (Windows).
+- **Node.js**: Version **24.0.0** or higher is strictly required due to usage of modern Node.js APIs (e.g., native test runner, worker threads).
+- **Package Manager**: **pnpm** (v9+) is required for workspace management.
+- **OS**: macOS, Linux, or Windows (WSL2 recommended).
 
-## Installation Steps
+## Repository Bootstrap
 
-1. **Clone the Repository**
-   ```bash
-   git clone https://github.com/your-org/aitools-photo-optimizer.git
-   cd aitools-photo-optimizer
-   ```
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/your-org/aitool-photo-optimizer.git
+    cd aitool-photo-optimizer
+    ```
 
-2. **Install Dependencies**
-   ```bash
-   pnpm install
-   ```
-   *This installs all dependencies for all workspace packages.*
+2.  **Install dependencies**
+    Use `pnpm` to install dependencies across all workspaces.
+    ```bash
+    pnpm install
+    ```
 
-3. **Build Core Packages**
-   ```bash
-   pnpm build
-   ```
-   *This compiles TypeScript references across the monorepo.*
-
-## Verification
-
-Run the health check script to verify your environment:
-
-```bash
-pnpm run agent:health
-```
-
-Expected output should show `status: "ok"`.
+3.  **Build the project**
+    Build all packages in topological order.
+    ```bash
+    pnpm build
+    ```
 
 ## Common Issues
 
-### `ERR_PNPM_ENGINE_STRICT`
-If you see an error about Node version, ensure you are using Node v24+.
-```bash
-nvm install 24
-nvm use 24
-```
+### "Sharp prebuilt mismatch"
+If you encounter errors related to `sharp` or `libvips`:
+- Ensure you are on a supported architecture (x64, arm64).
+- Run `pnpm rebuild sharp`.
+- If on Linux/Alpine, verify `vips-dev` packages are installed if not using prebuilts.
 
-### Sharp Installation Failures
-If `sharp` fails to install, you may need system libraries.
-- **MacOS**: `brew install vips`
-- **Ubuntu**: `sudo apt-get install libvips-dev`
-*Note: Usually prebuilt binaries work fine.*
+### "Command not found: apo"
+The CLI is built into `packages/node/bin/apo.js`. If you want to run it globally, link it:
+```bash
+pnpm -C packages/node link --global
+```
+Then you can run `apo --help`.

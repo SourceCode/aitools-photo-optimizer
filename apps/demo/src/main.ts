@@ -5,7 +5,7 @@ const fetchManifest = async () => {
     try {
         const res = await fetch('/optimized/manifest.json');
         return await res.json();
-    } catch (e) {
+    } catch (_e) {
         console.warn('Manifest not found');
         return null;
     }

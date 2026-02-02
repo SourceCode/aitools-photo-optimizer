@@ -43,7 +43,7 @@ try {
             imagesPerSecond: (result.totalFiles / (duration / 1000)).toFixed(2)
         };
         console.log('BENCHMARK REPORT:', JSON.stringify(report, null, 2));
-    } catch (e) {
+    } catch (_e) {
         console.error('Failed to parse benchmark JSON output');
     }
 

@@ -1,34 +1,35 @@
 # Troubleshooting
 
-## Common Errors
+## Installation Issues
 
-### `Input buffer contains unsupported image format`
-**Cause**: The input file is not a valid image or is corrupted.
-**Fix**: Verify the file opens in a standard viewer. Check if `sharp` supports it (e.g., HEIC might need specific libs).
+### `sharp` architecture mismatch
+**Error**: `Module did not self-register` or `incompatible library version`.
+**Fix**:
+1.  Run `rm -rf node_modules pnpm-lock.yaml`.
+2.  Run `pnpm install`.
+3.  If on Alpine Linux, install `vips-dev`.
 
-### `VipsJpeg: premature end of JPEG image`
-**Cause**: Truncated input file.
-**Fix**: Re-download or regenerate the source image.
+### `pnpm` workspace not found
+**Error**: `ERR_PNPM_WORKSPACE_PKG_NOT_FOUND`
+**Fix**: Ensure you are running `pnpm install` from the root directory.
 
-### `Configuration Error: ...`
-**Cause**: `apo.config.json` is invalid.
-**Fix**: Read the error message carefully; it lists the exact path and issue. Refer to [Schema](schema.md).
+## Runtime Issues
 
-### `ERR_PNPM_ENGINE_STRICT`
-**Cause**: Wrong Node version.
-**Fix**: Switch to Node v24.13.0+.
+### Images not loading in Demo
+**Symptom**: 404 errors for images.
+**Check**:
+1.  Did you run `pnpm build`? The demo relies on `packages/web` being built.
+2.  Did you run the optimize command?
+3.  Check `manifest.json` in the public/output folder.
 
-## Debugging
+### "Worker exited with code 1"
+**Symptom**: CLI crashes.
+**Check**:
+1.  Run with `--verbose` to see the full stack trace from the worker.
+2.  Check for corrupt Input images.
 
-Run with verbose logging:
-```bash
-apo build "..." --verbose
-```
-
-## Resetting
-
-To clear the cache/output:
-```bash
-apo build "..." --clean
-```
-Or manually delete the output directory.
+## Performance Issues
+**Symptom**: Build is slow.
+**Fix**:
+- Reduce concurrency: `UV_THREADPOOL_SIZE=2 apo build ...`
+- Check disk I/O speed.

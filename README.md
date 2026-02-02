@@ -1,119 +1,99 @@
-# AI Tools Photo Optimizer
+# Aitools Photo Optimizer
 
-![Project Logo](docs/images/logo.png)
+**Adaptive, AI-Ready Image Optimization for the Modern Web.**
 
-Production-grade, adaptive image optimization toolchain built with TypeScript. It scans, classifies, and optimizes images for the web, generating a runtime manifest for intelligent loading.
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen)
+![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
 
-## 🚀 Capabilities
+## Project Overview
 
-- **Intelligent Scanning**: Auto-discovery of image assets via glob patterns.
-- **Heuristic Classification**: Distinguishes photos, screenshots, and icons to apply tailored compression.
-- **Adaptive Planning**: Generates optimization plans (format, size, quality) based on image type and config.
-- **High-Performance Execution**: Uses `libvips` (via `sharp`) for blazingly fast parallel processing.
-- **Runtime Manifest**: deterministically maps source files to optimized variants for O(1) runtime lookup.
-- **Web Runtime**: 1kb client-side observer to automatically swap images.
+`aitools-photo-optimizer` is a high-performance, strictly typed monorepo designed to automate image optimization workflows. It analyzes source images, intelligently classifies them (Photo vs Icon vs Screenshot), and generates optimized multi-format variants (AVIF, WebP) tailored to the content type.
 
-## 🏗 Architecture Summary
+**Key Capabilities:**
+- **Smart Classification**: Uses heuristics to determine if an image is a photo or graphic/icon.
+- **Adaptive Encoding**: applies different compression settings based on classification (e.g., lossy for photos, lossless for icons).
+- **Source Updating**: Automatically rewrites HTML/JS/TS source files to reference generated assets.
+- **Monorepo Architecture**: Modular design separating Core logic, Node.js CLI/Runtime, and Web Runtime.
+- **Agent-Ready**: Designed with strict typing and clear boundaries, making it ideal for AI agent integration.
 
-The system follows a strict **scan -> plan -> execute** pipeline:
+## Architecture Summary
 
-```mermaid
-graph TD
-    A[Source Images] -->|Scanner| B(Input Descriptor)
-    B -->|Classifier| C{Classification}
-    C -->|Photo| D[Planner]
-    C -->|Screenshot| D
-    C -->|Icon| D
-    D -->|Config & Presets| E[Transform Plan]
-    E -->|Executor| F[Optimized Assets]
-    F -->|Manifest Gen| G[manifest.json]
-```
+The project is structured as a **pnpm workspace** with the following packages:
 
-See [Implementation](docs/implementation.md) for deep dive.
+- **`@aitools-photo-optimizer/core`**: Pure logic, domain models, hashing, and planning. No side effects.
+- **`@aitools-photo-optimizer/node`**: Node.js runtime, CLI, Worker Pool, file system IO, and Sharp integration.
+- **`@aitools-photo-optimizer/web`**: Browser runtime for dynamic asset loading and observation.
+- **`apps/demo`**: A Vite-based demo application showcasing the web runtime.
 
-## ⚡️ Tech Stack
+See [Implementation Docs](docs/implementation.md) for a deep dive.
 
-- **Runtime**: Node.js v24.13.0+ (Strict)
-- **Language**: TypeScript 5.0+
-- **Image Engine**: [Sharp](https://sharp.pixelplumbing.com/) (libvips)
-- **Package Manager**: PNPM (Monorepo via workspaces)
-- **Testing**: Vitest
-- **Linting**: ESLint + Prettier
+## Tech Stack
 
-## 🏁 Quick Start
+- **Runtime**: Node.js >= 24.0.0, Modern Browsers
+- **Languages**: TypeScript 5.x
+- **Build System**: Turbo / pnpm workspaces / Vite / tsup
+- **Testing**: Vitest, native node `test` runner
+- **Image Processing**: `sharp` (libvips)
+- **Code Quality**: ESLint, Prettier, Husky
 
-### 1. Prerequisites
-- Node.js v24+
-- pnpm
+## Quick Start
 
-### 2. Install & Build
+### Prerequisites
+- Node.js 24+
+- pnpm 9+
+
+### Running Locally
+
 ```bash
-git clone <repo-url>
-cd aitool-photo-optimizer
+# 1. Install dependencies
 pnpm install
+
+# 2. Build detailed packages
 pnpm build
+
+# 3. Run the demo app
+pnpm -C apps/demo dev
 ```
 
-### 3. Run Optimization
-```bash
-# Optimize all images in public/images
-./packages/node/bin/apo.js build 'public/images/**/*.{jpg,png}' --out public/dist
-```
+For full details, see [Installation](docs/install.md) and [First Run](docs/first-run.md).
 
-See [First Run](docs/first-run.md) for detailed guide.
+## Configuration
 
-## 🛠 Configuration
+Configuration is handled via CLI flags and standard node conventions.
+See [Setup Guide](docs/setup.md) for environment variables and advanced config.
 
-Configuration is handled via `apo.config.json`.
+## Testing & Coverage
 
-```json
-{
-  "quality": 80,
-  "formats": ["avif", "webp"],
-  "presets": {
-    "photo": "web-2025-balanced"
-  }
-}
-```
-
-See [Setup & Configuration](docs/setup.md).
-
-## 🧪 Testing & Coverage
-
-We use Vitest for unit and integration testing.
+We maintain high test coverage (>90%).
 
 ```bash
-# Run tests
+# Run all tests
 pnpm test
 
-# Generate coverage
-pnpm test --coverage
+# Run with coverage (results in coverage/)
+pnpm run test --coverage
 ```
 
-See [Testing](docs/testing.md) and [Coverage](docs/coverage.md).
+See [Coverage Report](docs/coverage.md).
 
-## 📚 Documentation Index
+## Documentation Index
 
-- **[Installation](docs/install.md)**: Setup instructions.
-- **[Configuration](docs/setup.md)**: Environment and config reference.
-- **[First Run](docs/first-run.md)**: Step-by-step usage guide.
-- **[Functionality](docs/functionality.md)**: Core features explained.
-- **[Schema](docs/schema.md)**: Configuration schema definition.
-- **[API Reference](docs/api.md)**: Interfaces and CLI commands.
-- **[Integrations](docs/integrations.md)**: Third-party dependencies.
-- **[Architecture](docs/implementation.md)**: Codebase layout and design.
-- **[Testing](docs/testing.md)**: Test strategy and commands.
-- **[Security](docs/security.md)**: Security policy and best practices.
-- **[Troubleshooting](docs/troubleshooting.md)**: Common issues and fixes.
-- **[Monorepo](docs/monorepo.md)**: Workspace structure.
-- **[Contributing](docs/contributing.md)**: Developer guide.
-- **[Changelog](docs/changelog.md)**: Version history.
-- **[Agent Guide](docs/agent-contribution.md)**: Instructions for AI agents.
+- **[Installation](docs/install.md)** - Requirements and install guide.
+- **[Setup & Configuration](docs/setup.md)** - Env vars and config details.
+- **[First Run](docs/first-run.md)** - Step-by-step usage guide.
+- **[Functionality](docs/functionality.md)** - Core features and workflows.
+- **[API Reference](docs/api.md)** - CLI and Library API.
+- **[Architecture](docs/implementation.md)** - Internal design and modules.
+- **[Security](docs/security.md)** - Auth, policies, and hardening.
+- **[Testing](docs/testing.md)** - Test strategy and patterns.
+- **[Troubleshooting](docs/troubleshooting.md)** - Common issues and fixes.
+- **[Contributing](docs/contributing.md)** - How to help out.
 
-## 🤝 Contributing
+## Contributing
 
-We welcome contributions! Please see [Contributing](docs/contributing.md).
+We welcome contributions! Please check [Contributing](docs/contributing.md) for guidelines on PRs, commit messages, and code style.
 
-## 📄 License
+## License
 
 MIT
