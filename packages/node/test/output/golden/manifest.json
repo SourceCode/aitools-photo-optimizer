@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-02-02T17:13:18.214Z",
+  "generatedAt": "2026-02-02T18:50:36.367Z",
   "entries": {
     "/Users/ryanrentfro/code/aitool-photo-optimizer/packages/node/test/fixtures/golden/icon.png": {
       "inputPath": "/Users/ryanrentfro/code/aitool-photo-optimizer/packages/node/test/fixtures/golden/icon.png",
@@ -29,21 +29,21 @@
       "classification": "photo",
       "outputs": [
         {
-          "format": "avif",
-          "width": 800,
-          "height": 600,
-          "path": "packages/node/test/output/golden/dcf6dcc5229d09b6_800x600_4e6e29b8.avif",
-          "size": 641,
-          "metrics": {
-            "ssim": 1
-          }
-        },
-        {
           "format": "webp",
           "width": 800,
           "height": 600,
           "path": "packages/node/test/output/golden/dcf6dcc5229d09b6_800x600_4e6e29b8.webp",
           "size": 2746,
+          "metrics": {
+            "ssim": 1
+          }
+        },
+        {
+          "format": "avif",
+          "width": 800,
+          "height": 600,
+          "path": "packages/node/test/output/golden/dcf6dcc5229d09b6_800x600_4e6e29b8.avif",
+          "size": 641,
           "metrics": {
             "ssim": 1
           }

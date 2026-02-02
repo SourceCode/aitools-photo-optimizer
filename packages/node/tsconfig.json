@@ -4,11 +4,7 @@
         "outDir": "./dist",
         "rootDir": "./src",
         "module": "commonjs",
-        "paths": {
-            "@aitools-photo-optimizer/core": [
-                "../core/src/index.ts"
-            ]
-        }
+        "paths": {}
     },
     "references": [
         {

@@ -23,13 +23,6 @@
         "declaration": true,
         "composite": true,
         "skipLibCheck": true,
-        "paths": {
-            "@aitools-photo-optimizer/core": [
-                "./packages/core/src/index.ts"
-            ],
-            "@aitools-photo-optimizer/web": [
-                "./packages/web/src/index.ts"
-            ]
-        }
+        "paths": {}
     }
 }
