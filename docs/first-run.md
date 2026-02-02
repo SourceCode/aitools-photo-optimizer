@@ -1,59 +1,53 @@
 # First Run Guide
 
-This guide will walk you through your first usage of the Photo Optimizer CLI and verifying the output.
+This guide will walk you through your first optimization run.
 
 ## 1. Prepare Source Images
 
-Create a directory with some raw images you want to optimize.
-
+Create a folder for your source images if you haven't already.
 ```bash
-mkdir -p public/images
-# Add some jpg/png files to public/images/
+mkdir -p inputs
+# Copy some images here
+cp ~/Downloads/my-photo.jpg inputs/
 ```
 
-## 2. Run the Build Command
+## 2. Check Configuration
 
-Use the CLI to optimize the images.
+Create a `apo.config.json` in your root.
+```json
+{
+  "quality": 75,
+  "formats": ["webp"]
+}
+```
+
+## 3. Run Optimization
+
+Run the CLI command via the `apo` binary.
 
 ```bash
-# FROM: Root of the repo
-./packages/node/bin/apo.js build 'public/images/*.{jpg,png}' --out public/optimized --verbose
+# If running from source
+./packages/node/bin/apo.js build "inputs/*.jpg" --out dist --verbose
 ```
 
 **Expected Output:**
-
 ```text
-Scanning for images matching: public/images/*.{jpg,png}
-Found 2 images.
-[public/images/photo.jpg] Classified as: photo
-Generated photo_hash.avif (SSIM: 0.96)
-Generated photo_hash.webp (SSIM: 0.95)
-...
+Scanning for images matching: inputs/*.jpg
+Found 1 images.
+[inputs/my-photo.jpg] Classified as: photo
+Generated my-photo_hash.webp
 Build complete! Manifest written to manifest.json
-Total space saved: 1.24 MB
 ```
 
-## 3. Verify Output
+## 4. Verify Output
 
-Navigate to the output directory:
-
+Check the `dist` folder.
 ```bash
-cd public/optimized
-ls -lh
+ls -lh dist
 ```
+You should see the optimized files and a `manifest.json`.
 
-You should see:
-- Optimized `.avif` and `.webp` files.
-- `manifest.json`: A JSON map connecting your original files to the optimized versions.
+## 5. Next Steps
 
-## 4. Run the Demo App
-
-To see the Web Runtime in action, use the provided demo app.
-
-```bash
-# Start the demo
-cd apps/demo
-pnpm dev
-```
-
-Open `http://localhost:5173` (or the port shown). The demo app is pre-configured to use the `@aitools-photo-optimizer/web` runtime to adaptively load the images you just built.
+- Integrate the `packages/web` runtime to load these images.
+- Adjust `apo.config.json` to tune quality.

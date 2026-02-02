@@ -1,36 +1,46 @@
 # Testing Strategy
 
-We use **Vitest** for unit and integration testing.
+We use **Vitest** for all testing needs.
+
+## Test Types
+
+### 1. Unit Tests
+- **Location**: `*.test.ts` alongside source or in `test/`.
+- **Focus**: Individual functions (Planner, Classifier, Config Validation).
+- **Mocking**: Adapters (FS, Codec) are mocked to test logic in isolation.
+
+### 2. Integration Tests
+- **Location**: `packages/node/test/*.test.ts`.
+- **Focus**: Worker pool, Queue, Real FS interactions (using temp dirs).
+
+### 3. E2E / Golden Tests
+- **Location**: `packages/node/test/golden.spec.ts`.
+- **Focus**: Full CLI run against fixture images.
+- **Verification**: Checks output existence, format, and rough size.
 
 ## Running Tests
 
-Run all tests from the root:
-
 ```bash
+# Run all tests
 pnpm test
+
+# Run specific file
+pnpm test cli.test.ts
+
+# Watch mode
+pnpm test --watch
 ```
 
-## Test Levels
+## Continuous Integration
 
-### 1. Unit Tests
-Located in `test/` or alongside source files. Focus on pure logic in `@aitools-photo-optimizer/core`.
-- **Goal**: Verify classes like `HeuristicClassifier` or `Planner`.
-- **Command**: `pnpm -r run test`
+Tests run on every PR.
+- **Lint**: ESLint check.
+- **Types**: `tsc --noEmit`.
+- **Test**: Vitest run.
 
-### 2. Integration / Golden Tests
-Located in `packages/node/test/golden.spec.ts`.
-- **Goal**: Ensure the full pipeline (CLI -> Sharp -> Output) works as expected.
-- **Method**:
-  - Uses `fixtures/` images.
-  - Runs the optimizer.
-  - Compares output against known "golden" expectations or asserts properties (e.g., "output size < input size").
-  
-## Writing Tests
+## Benchmarks
 
-When adding a new feature:
-1.  Add unit tests for the logic in `core`.
-2.  If it affects output quality, add a fixture case in `packages/node/test/golden.spec.ts`.
-
-## CI/CD
-
-Tests are run on every Pull Request via GitHub Actions (if configured).
+We have a benchmark script to measure throughput.
+```bash
+pnpm run benchmark
+```

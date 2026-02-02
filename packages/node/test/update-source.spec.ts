@@ -4,7 +4,6 @@ import fs from 'fs-extra';
 import { execSync } from 'child_process';
 
 const CLI_PATH = path.resolve(__dirname, '../bin/apo.js');
-const FIXTURES_DIR = path.resolve(__dirname, 'fixtures/source-update');
 const TEMP_DIR = path.resolve(__dirname, 'temp-source-update-cli');
 
 describe('CLI source-update', () => {
@@ -49,8 +48,9 @@ describe('CLI source-update', () => {
 
         try {
             execSync(cmd, { cwd: process.cwd(), encoding: 'utf-8' });
-        } catch (e: any) {
-            console.error('STDERR:', e.stderr?.toString());
+        } catch (e: unknown) {
+            const err = e as { stderr?: Buffer };
+            console.error('STDERR:', err.stderr?.toString());
             throw e;
         }
 

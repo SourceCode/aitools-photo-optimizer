@@ -1,38 +1,34 @@
 # Troubleshooting
 
-## Common Issues
+## Common Errors
 
-### 1. "Sharp Prebuilt Binaries Not Found"
-**Error**: `Something went wrong installing the "sharp" module`
-**Solution**:
-- Run `pnpm rebuild sharp`
-- Ensure you are on a supported architecture (x64, arm64).
-- If using Alpine Linux (Docker), use `npm install --platform=linuxmusl --arch=x64 sharp`.
+### `Input buffer contains unsupported image format`
+**Cause**: The input file is not a valid image or is corrupted.
+**Fix**: Verify the file opens in a standard viewer. Check if `sharp` supports it (e.g., HEIC might need specific libs).
 
-### 2. "Images not loading in Web Runtime"
-**Symptoms**: Images show broken link or original source.
-**Checks**:
-- Check browser console for 404s.
-- Verify `manifest.json` exists in the output folder.
-- Ensure the `AutoOptimizer` resolver function matches your URL structure.
-  ```ts
-  // Debug resolver
-  const optimizer = new AutoOptimizer((src, w, fmt) => {
-    console.log('Resolving:', src, fmt);
-    return ...
-  });
-  ```
+### `VipsJpeg: premature end of JPEG image`
+**Cause**: Truncated input file.
+**Fix**: Re-download or regenerate the source image.
 
-### 3. Build is slow
-**Cause**: High resolution images or `effort: 9`.
-**Solution**:
-- Lower `effort` in config (default is 4, max is 9).
-- Check `concurrency` setting (defaults to CPU cores).
+### `Configuration Error: ...`
+**Cause**: `apo.config.json` is invalid.
+**Fix**: Read the error message carefully; it lists the exact path and issue. Refer to [Schema](schema.md).
 
-## Logging
+### `ERR_PNPM_ENGINE_STRICT`
+**Cause**: Wrong Node version.
+**Fix**: Switch to Node v24.13.0+.
 
-Use verbose mode to see what's happening:
+## Debugging
 
+Run with verbose logging:
 ```bash
-apo build ... --verbose
+apo build "..." --verbose
 ```
+
+## Resetting
+
+To clear the cache/output:
+```bash
+apo build "..." --clean
+```
+Or manually delete the output directory.

@@ -1,70 +1,55 @@
 # Architecture & Implementation
 
-This document details the internal architecture of the `@aitools-photo-optimizer` monorepo.
+This document details the internal architecture of the `aitools-photo-optimizer`.
 
-## System Design
+## Repository Layout
 
-The system follows a pipeline architecture pattern:
+The project is structured as a **PNPM Workspace Monorepo**:
 
-```mermaid
-graph LR
-    Input[Source Images] --> Scanner
-    Scanner --> Classifier
-    Classifier --> Planner
-    Planner --> Executor
-    Executor --> Storage
-    Executor --> Manifest
-```
+- **`packages/core`**: Pure logic, interfaces, and models. Zero dependencies on Node.js APIs (platform agnostic).
+- **`packages/node`**: Node.js runtime adapter. Handles FS, CLI, and Sharp integration.
+- **`packages/web`**: Browser runtime (Observer) for auto-swapping images.
+- **`apps/demo`**: Integration example.
 
-### Components
+## Core Pipeline
 
-#### 1. Scanner
-- **Package**: `node`
-- **Responsibility**: Finds files matching user glob patterns.
-- **Implementation**: Uses `fast-glob` to respect `.gitignore` and patterns.
+The optimization process is a linear pipeline designed for determinism and performance.
 
-#### 2. Classifier (`@aitools-photo-optimizer/node/src/classifier.ts`)
-- **Responsibility**: Determines the nature of the image to select the best optimization preset.
-- **Logic**:
-  - Checks extensions (PNG vs JPG).
-  - (Planned) Analyzes entropy/histogram (future).
-  - Assigns types: `photo`, `screenshot`, `vector`, `icon`, `text`.
+### 1. Scan Phase
+**Location**: `packages/node/src/commands/build.ts`
+- Uses `fast-glob` to find files.
+- Creates `ImageInputDescriptor` with path and stats.
 
-#### 3. Planner (`@aitools-photo-optimizer/core`)
-- **Responsibility**: Pure logic that takes a descriptor + classification and produces a `TransformPlan`.
-- **Logic**:
-  - Looks up `OptimizerConfig`.
-  - Generates a list of `TransformJob`s (e.g., "Make AVIF at q80", "Make WebP at q90").
-  - Generates deterministic hashes for caching.
+### 2. Classify Phase
+**Location**: `packages/node/src/classifier.ts`
+- **Heuristic Engine**: Analyze filename, extension, and metadata.
+    - `screenshot`: Has keywords like "screen", "capture".
+    - `icon`: Small dimensions, square aspect ratio.
+    - `photo`: Default fallback.
 
-#### 4. Executor
-- **Package**: `node`
-- **Responsibility**: Executes the jobs.
-- **Concurrency**: Uses a `LocalQueue` to limit concurrent `sharp` instances (default 4).
-- **Processing**: Reads source buffer -> Pipes to Sharp -> Outputs Buffer -> Writes to `fs`.
+### 3. Plan Phase
+**Location**: `packages/core/src/planning/planner.ts`
+- Takes `ImageInputDescriptor` + `OptimizerConfig`.
+- Generates `TransformPlan`.
+- **Determinism**: The Plan ID is a content hash of the input file + config. This allows skip-work caching.
 
-#### 5. Manifest
-- **Responsibility**: A JSON map linking `Source Path -> Optimized Assets`.
-- **Structure**:
-  ```json
-  {
-    "input/file.jpg": {
-      "classification": "photo",
-      "outputs": [
-        { "format": "avif", "path": "hash.avif" },
-        { "format": "webp", "path": "hash.webp" }
-      ]
-    }
-  }
-  ```
+### 4. Execute Phase
+**Location**: `packages/node/src/commands/build.ts`
+- Executes `TransformJob`s in parallel using a `WorkerPool`.
+- Uses `sharp` to process buffers.
+- Compares output size (checks for "saved bytes").
 
-## Boundaries
+### 5. Manifest Generation
+- Aggregates all plans into `manifest.json`.
+- Maps Source Path -> Optimized Outputs.
 
-- **Core**: Contains NO platform-specific code (no `fs`, no `sharp`, no DOM). It is purely data-in / data-out types and logic.
-- **Node**: Contains all server-side I/O and heavyweight processing.
-- **Web**: Contains minimal DOM logic.
+## Key Design Decisions
 
-## State Management
+### Separation of Concerns
+`core` knows nothing about the file system. It only knows `Buffer` and `Job`. This allows the logic to potentially run in a tailored environment (e.g. WASM or Edge) in the future.
 
-- **Build Time**: Stateless file processing. State is effectively the file system.
-- **Run Time**: The `AutoOptimizer` maintains an internal cache of resolved images to prevent re-work during DOM interactions.
+### Runtime Manifest
+Instead of rewriting HTML at build time, we generate a manifest. A tiny runtime (`packages/web`) queries this manifest to swap `src` for `srcset` dynamically. This decouples the optimizer from the SSG/SSR framework.
+
+### Validation
+All configuration is validated via **Zod** schema (`packages/core/src/config/schema.ts`) to fail fast with descriptive errors.

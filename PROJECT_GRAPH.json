@@ -1,0 +1,74 @@
+{
+  "generatedAt": "2026-02-02T16:44:05.560Z",
+  "root": "/Users/ryanrentfro/code/aitool-photo-optimizer",
+  "packages": [
+    {
+      "name": "@aitools-photo-optimizer/core",
+      "path": "packages/core",
+      "version": "0.1.0",
+      "dependencies": {
+        "zod": "^4.3.6"
+      },
+      "devDependencies": {
+        "@types/node": "^20.19.30",
+        "typescript": "^5.9.3",
+        "vitest": "^1.6.1"
+      }
+    },
+    {
+      "name": "@aitools-photo-optimizer/node",
+      "path": "packages/node",
+      "version": "0.1.0",
+      "dependencies": {
+        "@aitools-photo-optimizer/core": "workspace:*",
+        "chalk": "^4.1.2",
+        "commander": "^11.1.0",
+        "fast-glob": "^3.3.3",
+        "fs-extra": "^11.3.3",
+        "sharp": "0.34.5"
+      },
+      "devDependencies": {
+        "@types/fs-extra": "^11.0.4",
+        "@types/node": "^20.19.30",
+        "tsup": "^8.5.1",
+        "typescript": "^5.9.3",
+        "vitest": "^4.0.18"
+      }
+    },
+    {
+      "name": "@aitools-photo-optimizer/web",
+      "path": "packages/web",
+      "version": "0.1.0",
+      "devDependencies": {
+        "typescript": "^5.9.3",
+        "vitest": "^4.0.18"
+      }
+    }
+  ],
+  "docs": [
+    "README.md",
+    "agent-contribution.md",
+    "api.md",
+    "changelog.md",
+    "contributing.md",
+    "coverage.md",
+    "first-run.md",
+    "functionality.md",
+    "glossary.md",
+    "implementation.md",
+    "install.md",
+    "integrations.md",
+    "monorepo.md",
+    "schema.md",
+    "security.md",
+    "setup.md",
+    "testing.md",
+    "troubleshooting.md"
+  ],
+  "criticalFiles": [
+    "README.md",
+    "AGENTS.md",
+    ".cursorrules",
+    "PROJECT_GRAPH.json"
+  ]
+}

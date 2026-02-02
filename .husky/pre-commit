@@ -1,0 +1,2 @@
+pnpm run agent:graph
+git add PROJECT_GRAPH.json

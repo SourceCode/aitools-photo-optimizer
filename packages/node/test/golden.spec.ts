@@ -29,9 +29,10 @@ describe('Golden Image Tests (E2E)', () => {
         try {
             const stdout = execSync(cmd, { cwd: process.cwd(), encoding: 'utf-8' });
             console.log('STDOUT:', stdout);
-        } catch (e: any) {
-            console.error('STDERR:', e.stderr?.toString());
-            console.error('STDOUT (partial):', e.stdout?.toString());
+        } catch (e: unknown) {
+            const err = e as { stderr?: Buffer; stdout?: Buffer };
+            console.error('STDERR:', err.stderr?.toString());
+            console.error('STDOUT (partial):', err.stdout?.toString());
             throw e;
         }
 

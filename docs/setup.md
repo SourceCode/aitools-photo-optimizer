@@ -1,54 +1,67 @@
 # Setup & Configuration
 
-This guide explains how to configure the Photo Optimizer suite.
-
 ## Environment Variables
 
-Currently, the core library is designed to run statelessly, but the CLI and Runtime can be configured via `apo.config.json` or environment variables for specific overrides (if implemented).
+Currently, the project relies primarily on the config file rather than environment variables, but the following are supported for development:
 
-*No specific `.env` variables are strictly required for basic CLI usage as of v0.1.0.*
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `CI` | Set to `true` to disable interactive progress bars | `false` |
+| `NODE_ENV` | `production` optimizes builds | `development` |
 
-## Configuration File (`apo.config.json`)
+## Configuration File
 
-To configure the optimizer behaviors, create an `apo.config.json` in your project root.
+The tool looks for `apo.config.json` in the current working directory.
 
-### Example
-
+### Minimal Example
 ```json
 {
   "quality": 80,
+  "formats": ["webp"]
+}
+```
+
+### Full Example
+```json
+{
+  "quality": 80,
+  "effort": 4,
   "lossless": false,
+  "stripMetadata": true,
   "formats": ["avif", "webp"],
   "presets": {
-    "photo": "web-2025-balanced",
-    "screenshot": "ui-assets-crisp"
+    "screenshot": "ui-crisp"
+  },
+  "definedPresets": {
+    "ui-crisp": {
+      "name": "ui-crisp",
+      "quality": 95,
+      "lossless": true,
+      "formats": ["png", "webp"]
+    }
+  },
+  "qualityGates": {
+    "photo": {
+      "ssim": 0.95
+    }
   }
 }
 ```
 
-### Configuration Options
+## Config Reference
 
-| Option | Type | Default | Description |
-| :--- | :--- | :--- | :--- |
-| `quality` | `number` | `80` | Default quality (0-100) for lossy compression. |
-| `effort` | `number` | `4` | CPU effort (0-9) for compression. Higher is slower but smaller. |
-| `lossless` | `boolean` | `false` | Enable lossless compression where supported. |
-| `stripMetadata` | `boolean` | `true` | Remove EXIF and other metadata to save space. |
-| `formats` | `Array` | `['avif', 'webp']` | Output formats to generate. |
-| `presets` | `Object` | *See below* | Mapping of classification types to named presets. |
-| `qualityGates` | `Object` | *See below* | Minimum SSIM metrics allowed. |
+### Root Options
+
+- **`quality`** (number, 0-100): Default JPEG/WebP quality.
+- **`effort`** (number, 0-9): CPU effort vs. file size. Higher is slower but smaller.
+- **`lossless`** (boolean): Use lossless compression where supported.
+- **`formats`**: List of target formats (`avif`, `webp`, `jpeg`, `png`).
+- **`stripMetadata`** (boolean): Remove EXIF/ICC data.
 
 ### Presets
 
-Presets allow you to define specific rules for different image types (Photos vs UI Screenshots).
+Define named presets in `definedPresets` and map them to image classifications (photo, screenshot, icon) in `presets`.
 
-**Default Presets:**
+### Quality Gates
 
-- `web-2025-balanced`: Standard web quality (Q80, Effort 4).
-- `ui-assets-crisp`: Higher quality for UI elements (Q90, Near-Lossless).
-
-## Secrets Management
-
-This project handles image data. Avoid committing any production API keys or sensitive image data to the repository.
-
-- **Storage Credentials**: If extending `StorageAdapter` for S3/GCS, use environment variables (`AWS_ACCESS_KEY_ID`, etc.) and **never** hardcode them in `apo.config.json`.
+Enforce minimum visual quality metrics (SSIM). If an image fails the gate, it may warn or fail the build (implementation dependent).

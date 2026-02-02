@@ -57,6 +57,7 @@ export function createTransformPlan(
         const optionsHash = createOptionsHash(specificConfig);
 
         const job: TransformJob = {
+            kind: 'transform',
             width: targetWidth,
             height: targetHeight,
             format,

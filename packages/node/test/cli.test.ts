@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
-import { buildAction, loadConfig, updateSourceAction } from '../src/cli';
+import { buildAction, loadConfig } from '../src/commands/build';
+import { updateSourceAction } from '../src/commands/update-source';
 import fg from 'fast-glob';
 import fs from 'fs-extra';
 import { HeuristicClassifier } from '../src/classifier';
@@ -163,7 +164,7 @@ describe('CLI', () => {
         });
 
         it('should handle errors', async () => {
-            const exitSpy = vi.spyOn(process, 'exit').mockImplementation((() => { }) as any);
+            const exitSpy = vi.spyOn(process, 'exit').mockImplementation((() => { }) as unknown as (code?: number | string | null | undefined) => never);
             mockLoadManifest.mockRejectedValue(new Error('Failed'));
 
             await updateSourceAction({ manifest: 'manifest.json', source: '**/*.html' });

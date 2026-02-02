@@ -1,33 +1,25 @@
-# Documentation Index
+# Documentation Hub
 
-Welcome to the **AI Tools Photo Optimizer** documentation. This project is a modern, adaptive image optimization toolchain built as a monorepo.
+Welcome to the `aitools-photo-optimizer` documentation.
 
-## Getting Started
+## User Guides
+- [Installation](install.md): Get up and running.
+- [Setup & Configuration](setup.md): detailed config reference.
+- [First Run](first-run.md): Your first optimization task.
+- [Functionality](functionality.md): What this tool can do.
+- [Troubleshooting](troubleshooting.md): Help when things go wrong.
 
-- [Installation](install.md) - System requirements and installation steps.
-- [Setup & Configuration](setup.md) - Environment variables and configuration options.
-- [First Run](first-run.md) - How to run your first optimization build.
+## Developer Reference
+- [Schema](schema.md): `apo.config.json` schema.
+- [API Reference](api.md): Core interfaces and CLI.
+- [Implementation](implementation.md): Architecture and internals.
+- [Integrations](integrations.md): External libraries.
+- [Monorepo Structure](monorepo.md): How packages are organized.
 
-## Core Concepts
-
-- [Functionality](functionality.md) - Overview of features, roles, and core workflows.
-- [Architecture & Implementation](implementation.md) - Deep dive into the monorepo structure and internal logic.
-- [Monorepo Structure](monorepo.md) - Understanding the workspace layout.
-
-## Reference
-
-- [API Reference](api.md) - CLI commands and Web Runtime API.
-- [Data Schema](schema.md) - Configuration, Manifest, and Plan data structures.
-- [Integrations](integrations.md) - Working with third-party tools and frameworks.
-
-## Quality & Ops
-
-- [Testing Strategy](testing.md) - Running tests and adding new ones.
-- [Code Coverage](coverage.md) - Coverage reports and targets.
-- [Security](security.md) - Auth, secrets, and security practices.
-- [Troubleshooting](troubleshooting.md) - Common issues and debugging.
-
-## Community
-
-- [Contributing](contributing.md) - Guidelines for developers.
-- [Changelog](changelog.md) - Release history.
+## Quality & Process
+- [Testing](testing.md): How we test.
+- [Coverage](coverage.md): Coverage visualization.
+- [Security](security.md): Security stance.
+- [Contributing](contributing.md): Join the project.
+- [Changelog](changelog.md): History of changes.
+- [Agent Guide](agent-contribution.md): For AI collaborators.

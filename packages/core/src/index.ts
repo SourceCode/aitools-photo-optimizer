@@ -3,3 +3,5 @@ export * from './model/manifest';
 export * from './interfaces';
 export * from './hashing/hash';
 export * from './planning/planner';
+export * from './errors';
+export * from './config/schema';

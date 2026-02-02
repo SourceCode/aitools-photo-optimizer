@@ -7,6 +7,50 @@
 
 The `aitools-photo-optimizer` is a monorepo offering a complete image optimization toolchain.
 
+```mermaid
+graph TD
+    A[Source Images] -->|Scanner| B(Input Descriptor)
+    B -->|Classifier| C{Classification}
+    C -->|Photo| D[Planner]
+    C -->|Screenshot| D
+    C -->|Icon| D
+    D -->|Config & Presets| E[Transform Plan]
+    E -->|Executor (Sharp)| F[Optimized Assets]
+    F -->|Manifest Gen| G[manifest.json]
+    G -->|Source Updater| H[Updated Source Code]
+
+```mermaid
+sequenceDiagram
+    participant CLI
+    participant Scanner
+    participant Classifier
+    participant Planner
+    participant Executor
+    participant ManifestGen
+    participant FileSystem
+
+    CLI->>Scanner: Scan(glob)
+    Scanner->>FileSystem: List Files
+    FileSystem-->>Scanner: File Paths
+    Scanner-->>CLI: Input Descriptors
+
+    loop For each File
+        CLI->>Classifier: Classify(Input)
+        Classifier-->>CLI: Classification (Photo/Icon/etc)
+        
+        CLI->>Planner: Plan(Input, Classification, Config)
+        Planner-->>CLI: TransformPlan
+        
+        CLI->>Executor: Execute(Plan)
+        Executor->>FileSystem: Read/Write Images
+        Executor-->>CLI: Result (Optimized Assets)
+    end
+    
+    CLI->>ManifestGen: Generate Manifest
+    ManifestGen-->>FileSystem: Write manifest.json
+```
+```
+
 | Capability | Description | Core Component |
 | :--- | :--- | :--- |
 | **Scanning & Discovery** | Locates source images using `fast-glob`. Automatically respects ignore patterns (`node_modules`, `dist`, output dir). | `packages/node/src/cli.ts` |

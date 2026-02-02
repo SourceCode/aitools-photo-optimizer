@@ -1,0 +1,40 @@
+# .cursorrules
+
+# Project Rules for AI Assistants
+
+## 1. General Philosophy
+- **Monorepo**: This is a PNPM monorepo. Always run commands from the root unless specified.
+- **Type Safety**: NO `any`. NO `unknown` (unless immediately narrowed). strict mode is ON.
+- **Agent-First**: This codebase is designed to be maintained by agents. Clarity and explicitness are preferred over "magic".
+
+## 2. Tooling & Commands
+- **PackageManager**: `pnpm`
+- **Build**: `pnpm build` (Runs `turbo run build`)
+- **Test**: `pnpm test` (Uses Vitest)
+- **Lint**: `pnpm run lint` (ESLint + Prettier)
+
+## 3. Code Conventions
+- **Interfaces**: All interfaces must be exported from their package's `index.ts`.
+- **Functions**: clear, descriptive names. `verbNoun` pattern (e.g. `optimizeImage`, `generateManifest`).
+- **Async**: Use `async/await` over raw promises.
+- **Errors**: Throw typed errors where possible.
+
+## 4. Architecture
+- **Core**: `@aitools-photo-optimizer/core` contains pure business logic. NO node dependencies here (fs, path, etc.).
+- **Node**: `@aitools-photo-optimizer/node` contains the CLI and Sharp implementations.
+- **Web**: `@aitools-photo-optimizer/web` is browser-only. NO node polyfills.
+
+## 5. Agent Instructions
+- **Project Graph**: checking `PROJECT_GRAPH.json` (if available) gives a high-level overview.
+- **Image Processing**: ALWAYS use `SharpAdapter` or the abstract `executor` interface. Do not import `sharp` directly in consumer code.
+- **Dependencies**: ALWAYS use `pnpm` for installing/running.
+- **Documentation**: When adding a feature, update `AGENTS.md`.
+- **Config**: When modifying config schema, update `apo.config.json` default in `core`.
+- **TSDoc**: If you see a file without TSDoc, add it.
+- **Verification**: Run `pnpm run agent:fix` if available to auto-correct issues.
+
+## 6. Testing
+- Write tests for all new features.
+- Place tests in `test/` directory of the respective package.
+- Use `describe`, `it`, `expect` from `vitest`.
+- Use `pnpm test` to run all tests.

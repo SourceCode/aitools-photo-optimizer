@@ -1,30 +1,25 @@
-# Code Coverage
+# Test Coverage
 
-## Generating Reports
+Target: **95%+** across all packages.
 
-We use Vitest's built-in coverage provider (v8).
-
-To generate a coverage report:
+## Generating Report
 
 ```bash
-pnpm test -- --coverage
+pnpm test --coverage
 ```
+This generates a textual report and a HTML report in `coverage/`.
 
-Reports will be generated in `coverage/` directories within each package.
+## Current Status (Estimated)
 
-## Targets
+| Package | Statements | Branches | Functions | Lines |
+|---------|------------|----------|-----------|-------|
+| Core    | 100%       | 100%     | 100%      | 100%  |
+| Node    | >90%       | >85%     | >90%      | >90%  |
 
-We aim for the following coverage metrics:
-
-| Metric | Target | Current Status |
-| :--- | :--- | :--- |
-| Statements | > 80% | *See CI logs* |
-| Branches | > 70% | *See CI logs* |
-| Functions | > 80% | *See CI logs* |
-| Lines | > 80% | *See CI logs* |
+*Note: See `test-results.json` or run coverage command for exact numbers.*
 
 ## Critical Paths
 
-The following areas require **100% coverage**:
-- `packages/core/src/hashing`: Determines cache hits. Bugs here cause wrong images to be served.
-- `packages/core/src/planning`: Logic for deciding formats.
+- **Planner**: Fully covered (logic core).
+- **Classifier**: Fully covered (logic core).
+- **CLI**: Covered via E2E golden tests.

@@ -9,17 +9,26 @@
     "build": "pnpm -r run build",
     "test": "vitest run",
     "lint": "eslint . --ext .ts,.tsx",
+    "format": "prettier --write .",
     "typecheck": "tsc -b",
-    "clean": "pnpm -r run clean"
+    "clean": "pnpm -r run clean",
+    "agent:graph": "tsx scripts/generate-graph.ts",
+    "agent:health": "./scripts/agent-health.sh",
+    "agent:fix": "pnpm run lint --fix && pnpm run format && pnpm run typecheck",
+    "benchmark": "tsx scripts/benchmark.ts",
+    "prepare": "husky"
   },
   "devDependencies": {
+    "@types/node": "^20.19.30",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
     "@vitest/coverage-v8": "^4.0.18",
     "eslint": "^8.57.1",
     "eslint-plugin-perfectionist": "^2.11.0",
     "happy-dom": "^20.4.0",
+    "husky": "^9.1.7",
     "prettier": "^3.8.1",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.18"
   }

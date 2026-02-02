@@ -1,55 +1,54 @@
-# Installation
-
-This guide covers the system requirements and steps to install **AI Tools Photo Optimizer**.
+# Installation Guide
 
 ## Prerequisites
 
-Before installing, ensure you have the following software installed:
+- **Node.js**: Version **24.13.0** or higher.
+    - *Why?* We use modern Node features and strict engine versioning.
+- **Package Manager**: **PNPM** (version 8 or 9).
+    - *Why?* Efficient monorepo workspace support.
+- **OS**: MacOS, Linux, or WSL2 (Windows).
 
-- **Node.js**: v18.0.0 or higher.
-- **PNPM**: v8.0.0 or higher (required for monorepo workspace support).
-- **Sharp Dependencies**: The project uses `sharp` for image processing. Most systems (macOS, Linux, Windows) will dynamically grab the precompiled binaries.
+## Installation Steps
 
-## Steps
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/your-org/aitools-photo-optimizer.git
+   cd aitools-photo-optimizer
+   ```
 
-1.  **Clone the Repository**
+2. **Install Dependencies**
+   ```bash
+   pnpm install
+   ```
+   *This installs all dependencies for all workspace packages.*
 
-    ```bash
-    git clone https://github.com/your-org/aitool-photo-optimizer.git
-    cd aitool-photo-optimizer
-    ```
+3. **Build Core Packages**
+   ```bash
+   pnpm build
+   ```
+   *This compiles TypeScript references across the monorepo.*
 
-2.  **Install Dependencies**
+## Verification
 
-    We use `pnpm` workspace to manage dependencies across packages.
+Run the health check script to verify your environment:
 
-    ```bash
-    pnpm install
-    ```
+```bash
+pnpm run agent:health
+```
 
-3.  **Build Packages**
-
-    Build all packages in order (Core -> Node/Web).
-
-    ```bash
-    pnpm build
-    ```
-
-4.  **Verify Installation**
-
-    Run the tests to ensure everything is working correctly.
-
-    ```bash
-    pnpm test
-    ```
+Expected output should show `status: "ok"`.
 
 ## Common Issues
 
+### `ERR_PNPM_ENGINE_STRICT`
+If you see an error about Node version, ensure you are using Node v24+.
+```bash
+nvm install 24
+nvm use 24
+```
+
 ### Sharp Installation Failures
-
-If you encounter errors related to `sharp`, ensure you have the necessary build tools for your OS.
-
-- **macOS**: `xcode-select --install`
-- **Linux**: `sudo apt-get install build-essential`
-
-See [Troubleshooting](troubleshooting.md) for more.
+If `sharp` fails to install, you may need system libraries.
+- **MacOS**: `brew install vips`
+- **Ubuntu**: `sudo apt-get install libvips-dev`
+*Note: Usually prebuilt binaries work fine.*

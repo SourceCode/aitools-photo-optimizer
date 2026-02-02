@@ -2,91 +2,117 @@
 
 ![Project Logo](docs/images/logo.png)
 
-A modern, monorepo-based adaptive image optimization tool built with TypeScript. This toolchain allows you to scan, classify, and optimize images for the web, generating a manifest for runtime usage.
+Production-grade, adaptive image optimization toolchain built with TypeScript. It scans, classifies, and optimizes images for the web, generating a runtime manifest for intelligent loading.
 
-## 📚 Documentation
+## 🚀 Capabilities
 
-Complete documentation is available in the [docs/](docs/README.md) directory.
+- **Intelligent Scanning**: Auto-discovery of image assets via glob patterns.
+- **Heuristic Classification**: Distinguishes photos, screenshots, and icons to apply tailored compression.
+- **Adaptive Planning**: Generates optimization plans (format, size, quality) based on image type and config.
+- **High-Performance Execution**: Uses `libvips` (via `sharp`) for blazingly fast parallel processing.
+- **Runtime Manifest**: deterministically maps source files to optimized variants for O(1) runtime lookup.
+- **Web Runtime**: 1kb client-side observer to automatically swap images.
 
-- **[Installation](docs/install.md)**
-- **[Setup & Config](docs/setup.md)**
-- **[Functionality Overview](docs/functionality.md)**
-- **[Architecture](docs/implementation.md)**
-- **[API Reference](docs/api.md)**
+## 🏗 Architecture Summary
 
-## 📦 Packages
+The system follows a strict **scan -> plan -> execute** pipeline:
 
-This project is organized as a monorepo:
+```mermaid
+graph TD
+    A[Source Images] -->|Scanner| B(Input Descriptor)
+    B -->|Classifier| C{Classification}
+    C -->|Photo| D[Planner]
+    C -->|Screenshot| D
+    C -->|Icon| D
+    D -->|Config & Presets| E[Transform Plan]
+    E -->|Executor| F[Optimized Assets]
+    F -->|Manifest Gen| G[manifest.json]
+```
 
-- **[`@aitools-photo-optimizer/core`](packages/core)**: Pure TypeScript business logic (Planning, Hashing, Manifest).
-- **[`@aitools-photo-optimizer/node`](packages/node)**: Node.js runtime, CLI, and Sharp-based image processing.
-- **[`@aitools-photo-optimizer/web`](packages/web)**: Browser runtime for adaptive image loading/swapping.
+See [Implementation](docs/implementation.md) for deep dive.
 
-## 🚀 Quick Start
+## ⚡️ Tech Stack
 
-### 1. Installation
+- **Runtime**: Node.js v24.13.0+ (Strict)
+- **Language**: TypeScript 5.0+
+- **Image Engine**: [Sharp](https://sharp.pixelplumbing.com/) (libvips)
+- **Package Manager**: PNPM (Monorepo via workspaces)
+- **Testing**: Vitest
+- **Linting**: ESLint + Prettier
 
+## 🏁 Quick Start
+
+### 1. Prerequisites
+- Node.js v24+
+- pnpm
+
+### 2. Install & Build
 ```bash
+git clone <repo-url>
+cd aitool-photo-optimizer
 pnpm install
 pnpm build
 ```
 
-See [Installation Docs](docs/install.md) for details.
-
-### 2. CLI Usage
-
-Generate optimized assets from your source images:
-
+### 3. Run Optimization
 ```bash
-# Build optimized variants
-./packages/node/bin/apo.js build 'public/images/*.{jpg,png}' --out public/optimized
-
-# Update source files
-./packages/node/bin/apo.js update-source --source 'src/**/*.html' --manifest public/optimized/manifest.json
+# Optimize all images in public/images
+./packages/node/bin/apo.js build 'public/images/**/*.{jpg,png}' --out public/dist
 ```
 
-See [First Run](docs/first-run.md) for a complete guide.
+See [First Run](docs/first-run.md) for detailed guide.
 
-### 3. Web Runtime
+## 🛠 Configuration
 
-Use the client-side library to adaptively serve optimized images:
+Configuration is handled via `apo.config.json`.
 
-```typescript
-import { AutoOptimizer } from '@aitools-photo-optimizer/web';
-
-const optimizer = new AutoOptimizer((src, width, format) => {
-    // Map original src to optimized path
-    return `/optimized/${src.split('/').pop()?.replace('.', '_')}.${format}`;
-});
-
-optimizer.start();
+```json
+{
+  "quality": 80,
+  "formats": ["avif", "webp"],
+  "presets": {
+    "photo": "web-2025-balanced"
+  }
+}
 ```
 
-## 🏗 Architecture
+See [Setup & Configuration](docs/setup.md).
 
-The system uses a **Classifier -> Planner -> Executor** pipeline:
+## 🧪 Testing & Coverage
 
-1.  **Scanner**: Finds images.
-2.  **Classifier**: Determines image type (Photo, Screenshot, Icon).
-3.  **Planner**: Creates an optimization plan based on config and classification.
-4.  **Executor**: Uses `sharp` to process images locally (or potentially cloud).
-5.  **Manifest**: records the mapping of source to optimized assets.
-
-See [Architecture](docs/implementation.md) for more.
-
-## 🧪 Testing
-
-Run unit and integration tests:
+We use Vitest for unit and integration testing.
 
 ```bash
+# Run tests
 pnpm test
+
+# Generate coverage
+pnpm test --coverage
 ```
 
-See [Testing Strategy](docs/testing.md).
+See [Testing](docs/testing.md) and [Coverage](docs/coverage.md).
+
+## 📚 Documentation Index
+
+- **[Installation](docs/install.md)**: Setup instructions.
+- **[Configuration](docs/setup.md)**: Environment and config reference.
+- **[First Run](docs/first-run.md)**: Step-by-step usage guide.
+- **[Functionality](docs/functionality.md)**: Core features explained.
+- **[Schema](docs/schema.md)**: Configuration schema definition.
+- **[API Reference](docs/api.md)**: Interfaces and CLI commands.
+- **[Integrations](docs/integrations.md)**: Third-party dependencies.
+- **[Architecture](docs/implementation.md)**: Codebase layout and design.
+- **[Testing](docs/testing.md)**: Test strategy and commands.
+- **[Security](docs/security.md)**: Security policy and best practices.
+- **[Troubleshooting](docs/troubleshooting.md)**: Common issues and fixes.
+- **[Monorepo](docs/monorepo.md)**: Workspace structure.
+- **[Contributing](docs/contributing.md)**: Developer guide.
+- **[Changelog](docs/changelog.md)**: Version history.
+- **[Agent Guide](docs/agent-contribution.md)**: Instructions for AI agents.
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see [Contributing](docs/contributing.md) for details.
+We welcome contributions! Please see [Contributing](docs/contributing.md).
 
 ## 📄 License
 

@@ -1,73 +1,33 @@
-# Schema Reference
+# Configuration Schema
 
-This document outlines the key data structures used in the system across config and manifests.
+The `apo.config.json` is validated using Zod.
 
-## Configuration Schema (`OptimizerConfig`)
+## Types
 
-Used in `apo.config.json` or defaults.
+### OptimizerConfig
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `quality` | `number` | `80` | Global quality (0-100). |
+| `effort` | `number` | `4` | CPU effort (0-9). |
+| `lossless` | `boolean` | `false` | Enable lossless compression. |
+| `formats` | `Array` | `['avif', 'webp']` | Output formats. |
+| `presets` | `Record` | `{}` | Map classification -> preset name. |
+| `definedPresets` | `Record` | `{}` | Define custom presets. |
+| `qualityGates` | `Record` | `{}` | SSIM thresholds per class. |
+
+### OptimizationPreset
+
+Extends `OptimizerConfig` (except `presets`, `definedPresets`, `qualityGates`).
+Can override any base setting.
+
+### QualityMetrics
 
 | Field | Type | Description |
-| :--- | :--- | :--- |
-| `quality` | `number` | 0-100 base quality. |
-| `lossless` | `boolean` | Enable lossless compression. |
-| `formats` | `string[]` | Output formats (avif, webp, jpeg, png). |
-| `presets` | `Map<Classification, PresetName>` | Mapping of image types to preset settings. |
-| `qualityGates` | `Map<Classification, QualityMetrics>` | Minimum SSIM/PSNR scores required. |
+|-------|------|-------------|
+| `ssim` | `number` | Structural Similarity Index (0-1). |
+| `psnr` | `number` | Peak Signal-to-Noise Ratio. |
 
-## Manifest Schema
+## Validation
 
-Generated at `manifest.json`.
-
-```typescript
-interface Manifest {
-    version: string;
-    entries: Record<string, ManifestEntry>;
-}
-
-interface ManifestEntry {
-    inputPath: string; // Relative path of source
-    contentHash: string; // Unique hash of plan
-    classification: 'photo' | 'screenshot' | 'vector' | 'icon' | 'text' | 'unknown';
-    outputs: OptimizedAsset[];
-}
-
-interface OptimizedAsset {
-    format: 'avif' | 'webp' | 'jpeg' | 'png';
-    width: number;
-    height: number;
-    path: string; // Relative path to output file
-    size: number; // Bytes
-    metrics?: {
-        ssim?: number;
-    };
-}
-```
-
-## Internal Models
-
-### `ImageInputDescriptor`
-
-Describes a source image before processing.
-
-```typescript
-interface ImageInputDescriptor {
-    path: string;
-    stats: {
-        size: number;
-        mtime: Date;
-    };
-    classification?: string;
-}
-```
-
-### `TransformPlan`
-
-The blueprint for a specific file's optimization.
-
-```typescript
-interface TransformPlan {
-    id: string; // Hash
-    input: ImageInputDescriptor;
-    outputs: TransformJob[];
-}
-```
+Invalid configuration will throw a descriptive error listing all issues found by Zod.
