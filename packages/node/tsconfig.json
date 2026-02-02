@@ -6,10 +6,15 @@
         "module": "commonjs",
         "paths": {
             "@aitools-photo-optimizer/core": [
-                "../core/dist/index.d.ts"
+                "../core/src/index.ts"
             ]
         }
     },
+    "references": [
+        {
+            "path": "../core"
+        }
+    ],
     "include": [
         "src/**/*"
     ]
